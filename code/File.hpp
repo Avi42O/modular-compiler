@@ -25,6 +25,8 @@ class File{
 
     ~File(){
       finalize();
+      fclose(data);
+      fclose(buffer);
     }
 
     void commit(){
@@ -59,10 +61,13 @@ class File{
     }
 
     void seek(long offset, int origin){
-      std::fseek(data, offset, origin);
+      if (data != nullptr)
+        std::fseek(data, offset, origin);
     }
 
     std::string read(std::function<bool(char)> stop_con){
+      if (data==nullptr)
+        return "";
       std::string temp;
       char chr;
       while ((chr=std::fgetc(data))!=EOF && !stop_con(chr)){
@@ -95,28 +100,46 @@ class File{
     }
 
     char read(){
-      return std::fgetc(data);
+      if (data != nullptr)
+        return std::fgetc(data);
+      return -1;
     }
 
     void write(char chr){
-      std::fputc(chr, buffer);
+      if (buffer != nullptr)
+        std::fputc(chr, buffer);
     }
 
     void write(std::string str){
-      for (std::size_t i=0; i<str.size(); i++){
-        std::fputc(str[i], buffer);
+      if (buffer != nullptr){
+        for (std::size_t i=0; i<str.size(); i++){
+          std::fputc(str[i], buffer);
+        }
       }
     }
 
-    void del(){
-      fclose(buffer);
+    void rewind(long offset){
+      if (buffer != nullptr)
+        std::fseek(buffer, offset, SEEK_CUR);
+    }
+
+    void copy(std::string file){
+      if (buffer!=nullptr){
+        std::FILE *temp = fopen(file, "rb");
+        if (temp!=nullptr){
+          int chr;
+          while ((chr=fgetc(temp)) != EOF){
+            fputc(chr, buffer);
+          }
+        }
+      }
+    }
+
+    void clear(){
+      if (buffer != nullptr)
+        fclose(buffer);
       buffer = std::tmpfile();
     }
-
-    void rewind(long offset){
-      std::fseek(buffer, offset, SEEK_CUR);
-    }
-
 
 };
 
