@@ -1,3 +1,6 @@
+#ifndef FILE_H
+#define FILE_H
+
 #include <string>
 #include <cstdio>
 #include <functional>
@@ -116,3 +119,5 @@ class File{
 
 
 };
+
+#endif //FILE_H
