@@ -1,1 +1,10 @@
 
+spaceChar = " "
+spacePreTab = 2
+
+stringStart = '"'
+stringEnd = '"'
+
+charStart = "'"
+charEnd = "'"
+
